@@ -83,7 +83,7 @@ class PyramidViGLT(pl.LightningModule):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
         return optimizer
 
-    def training_step(self, train_batch):
+    def training_step(self, train_batch, batch_idx):
         x, y = train_batch
         out = self.model(x)
         out = out.squeeze(-1).squeeze(-1)
@@ -110,7 +110,7 @@ class PyramidViGLT(pl.LightningModule):
         self.val_acc.reset()
         return
 
-    def validation_step(self, val_batch):
+    def validation_step(self, val_batch, batch_idx):
         x, y = val_batch
         out = self.model(x)
         out = out.squeeze(-1).squeeze(-1)
