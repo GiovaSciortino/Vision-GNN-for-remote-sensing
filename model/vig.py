@@ -97,9 +97,9 @@ class ViG(nn.Module):
                         self.input_res[1] // reduce_factor)
                         )
         )
-
-        HW = (self.input_res[0] // reduce_factor) * \
-            (self.input_res[1] // reduce_factor)
+        H , W  = self.input_res[0] // reduce_factor, self.input_res[1] // reduce_factor
+        #HW = (self.input_res[0] // reduce_factor) * \
+            #(self.input_res[1] // reduce_factor)
         encoder_blocks = []
         in_ch = out_channels[0]
         for idx, out_ch in enumerate(out_channels):
@@ -107,15 +107,15 @@ class ViG(nn.Module):
                 encoder_blocks.append(
                     Downsample(in_ch)
                 )
-                HW = HW//reduce_factor
+                H , W  =  H// 2, W// 2
             if self.grapher_layer == 'default':
-                encoder_blocks.append(nn.ModuleList([GrapherFC(in_ch, heads, out_ch, reconstruct_image=False, act=act, n=HW,
+                encoder_blocks.append(nn.ModuleList([GrapherFC(in_ch, heads, out_ch, reconstruct_image=False, act=act, H = H, W = W,
                                       relative_positional_embedding=self.relative_positional_embedding, **kwargs), FFN(in_ch, out_ch * 2, act)]))
             elif self.grapher_layer == 'GAT':
-                encoder_blocks.append(nn.ModuleList([GATGrapherFC(in_ch, heads, out_ch, reconstruct_image=False, act=act, n=HW,
+                encoder_blocks.append(nn.ModuleList([GATGrapherFC(in_ch, heads, out_ch, reconstruct_image=False, act=act, H = H, W = W,
                                       relative_positional_embedding=self.relative_positional_embedding, **kwargs), FFN(in_ch, out_ch * 2, act)]))
             elif self.grapher_layer == 'GCN':
-                encoder_blocks.append(nn.ModuleList([GCNGrapherFC(in_ch, heads, out_ch, reconstruct_image=False, act=act, n=HW,
+                encoder_blocks.append(nn.ModuleList([GCNGrapherFC(in_ch, heads, out_ch, reconstruct_image=False, act=act, H = H, W = W,
                                       relative_positional_embedding=self.relative_positional_embedding, **kwargs), FFN(in_ch, out_ch * 2, act)]))
         self.encoder = nn.ModuleList(encoder_blocks)
 
@@ -184,7 +184,6 @@ class PyramidViG(ViG):
     def forward(self, x: Tensor) -> Tensor:
         B, _, H, W = x.shape
         # input x is of shape: B, C, H, W
-
         x = self.patch_embedding(x) + self.pos_encoding
         # after patch embedding, x.shape == B, C, H, W
         B, _, H, W = x.shape
