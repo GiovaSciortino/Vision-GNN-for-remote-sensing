@@ -1,6 +1,6 @@
 # Vision Graph Neural Networks for Remote Sensing
 
-Github repository of my master thesis project of Vision GNN(ViG) for remote sensing.
+Github repository of my master thesis project on Vision GNN(ViG) for remote sensing.
 
 
 ## Implementation of ViG 
